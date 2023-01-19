@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        function validateCstring() {
+            var cstring = document.getElementById("cstring");
+            // console.log(cstring.value)
+            if (cstring.validity.patternMismatch) {
+                cstring.setCustomValidity("Custom String can only contain alphanumeric characters, hyphens and underscores");
+                cstring.reportValidity();
+            } else {
+                cstring.setCustomValidity("");
+                cstring.reportValidity();
+            }
+        }
+        var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        function deleteElection(id){
+            fetch(`/admin/elections/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    _csrf: token,
+                })
+            })
+            .then((res) => {
+                if (res.ok){
+                    window.location.reload();
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        }
+    </script>
+    <style>
+        .hideMe {
+            -moz-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Firefox */
+            -webkit-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Safari and Chrome */
+            -o-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Opera */
+            animation: cssAnimation 0s ease-in 5s forwards;
+            -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+        }
+        @keyframes cssAnimation {
+            to {
+                width:0;
+                height:0;
+                overflow:hidden;
+                display: none;
+            }
+        }
+        @-webkit-keyframes cssAnimation {
+            to {
+                width:0;
+                height:0;
+                visibility:hidden;
+                display: none;
+            }
+        }
+  </style>
+</head>
+<body>
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header') %> 
+            <h1>Admin Dashboard</h1>
+            <br>
+            <a href="/admin/signout">Signout</a>
+            <br><br>
+            <h3 class="text-l font-semibold">Create an Election</h3>
+            <form action="/admin/election" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <div class="flex gap-2 py-4">
+                    <div class="flex-auto">
+                        <input type="text" name="name" id="name" placeholder="Give Your Elections a Name..." class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm">
+                    </div>
+                    <div class="flex-auto">
+                        <input type="test" id="cstring" name="cstring" placeholder="Custom String for Public URL" class="w-full border border-gray-300 p-2 border border-slate-300 rounded text-sm shadow-sm placeholder-slate-400
+                        invalid:border-pink-500 invalid:text-pink-600
+                        focus:invalid:border-pink-500 focus:invalid:ring-pink-500" pattern="^[a-zA-z]+[0-9a-zA-Z]*(?:_[a-z0-9]+)*$" onkeyup="validateCstring()"/>
+                    </div>
+                    <div class="flex-none">
+                        <button type="submit" class="bg-green-600 text-white px-5 py-1 rounded font-medium mx-1 my-1">Create Election</button>
+                    </div>
+                </div>
+            </form> 
+            <!-- <button class="bg-green-600 text-white px-5 py-1 5 rounded font-medium mr-2 mb-2">Create Election</button> -->
+            <br>
+            <%- include('electionCard', {title: "All Elections", elections: elections, id: "elections"}) %>
+            <br><br>
+            <%- include('electionCard', {title: "Live Elections", elections: liveElections, id: "live-elections"}) %>
+            <br>
+            <div>
+                <div class="hideMe">
+                    <% if(messages && messages.error && messages.error.length > 0)  { %>
+                        <ul class="bg-red-100 rounded border border-red-200 border-2 hideMe">
+                            <% for(var i=0; i<messages.error.length; i++) { %>
+                                    <li class="text-center hideMe"> <%= messages.error[i] %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+                    <% if(messages && messages.success && messages.success.length > 0)  { %>
+                        <ul class="bg-green-100 rounded border border-green-200 border-2 hideMe">
+                            <% for(var i=0; i<messages.success.length; i++) { %>
+                                    <li class="text-center hideMe"> <%= messages.success[i] %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+                    <% if(messages && messages.info && messages.info.length > 0)  { %>
+                        <ul class="bg-blue-100 rounded border border-blue-200 border-2 hideMe">
+                            <% for(var i=0; i<messages.info.length; i++) { %>
+                                    <li class="text-center hideMe"> <%= messages.info[i] %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+                </div>
+            </div>
+        </div> 
+    </div>
+    
+</body>
+</html>

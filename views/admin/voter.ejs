@@ -1,0 +1,47 @@
+<div class="flex items-center">
+    <h5>Registerd Voters</h5>
+    <span id="voter-count" class="bg-gray-300 ml-2 px-2 rounded text-sm">
+      <%= voters.length %>
+    </span>
+  </div>
+
+
+
+  <div class="overflow-x-auto relative">
+    <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+            <tr>
+                <th scope="col" class="py-3 px-6">
+                    VoterID
+                </th>
+                <th scope="col" class="py-3 px-6">
+                    Password
+                </th>
+                <th scope="col" class="py-3 px-6">
+                    Voter Name
+                </th>
+                <th scope="col" class="py-3 px-6">
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+          <% voters.forEach(voter => { %>
+            <tr class="bg-white border-b">
+              <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
+                  <%= voter.voterid %>
+              </th>
+              <td class="py-4 px-6">
+                  <%= voter.password %>
+              </td>
+              <td class="py-4 px-6">
+                  <%= voter.votername %>
+              </td>
+              <td class="py-4 px-6">
+                  <a href="#" class="font-medium text-blue-600 hover:underline" onclick="deleteVoter(<%= voter.id %>)">Delete</a>
+              </td>
+          </tr>
+          <% }) %>
+        </tbody>
+    </table>
+</div>

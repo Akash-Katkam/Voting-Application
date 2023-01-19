@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title><%= title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header') %>
+            <br>
+            <a href="/voter/logout">Signout</a>
+            <br>
+            <% if (!ended) { %>
+                <h2 class="text-2xl font-bold"> Please Await Results 🧐🧐</h2>
+            <% } else { %>
+                <br><br>
+                <h1 class="text-2xl font-bold">Election Results</h1>
+                <br><br>
+                <% for (let i=0;i < results.length; i++) { %>
+                    <div class="bg-gray-200 border rounded">
+                        <div class="flex justify-between border bg-gray-100 p-4 text-l font-semibold break-words">
+                            <p><%= i+1 %>.&nbsp;<%= results[i].question.title %></p>
+                            <p>Total Votes:&nbsp;<%= results[i].votes %></p>
+                        </div>
+                        <!-- <div class="border bg-gray-100 p-4 text-l font-semibold"><%= i+1 %>.&nbsp;<%= results[i].question.title %></div> -->
+                        <div class="border bg-gray-300 p-2"><%= results[i].question.desc %></div>
+                        <% for (let j=0;j < results[i].options.length; j++) { %>
+                            <div class="flex bg-gray-400 justify-between break-words">
+                                <div class="bg-gray-400 px-4 py-2"><%= results[i].options[j].option.desc %></div>
+                                <div class="bg-gray-400 px-4 py-2"><%= results[i].options[j].votes %></div>
+                            </div>
+                            <div class="w-full bg-gray-200 text-gray-200">
+                                <div class="bg-gray-700 text-xs font-medium text-gray-200 text-center p-0.5 leading-none" style="width: <%= (results[i].options[j].votes/results[i].votes)*100 || 0 %>%;min-width: 3%;"><%= (results[i].options[j].votes/results[i].votes)*100 || 0 %>%</div>
+                            </div>
+                        <% } %> 
+                    </div>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

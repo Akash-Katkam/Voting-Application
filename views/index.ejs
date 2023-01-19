@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Voting Application</title>
+</head>
+<body>
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <h1 class="text-3xl text-semibold p-4 m-4 text-gray-900 flex justify-center"><strong>Welcome To The Voting App</strong></h1>
+            <br><br>
+            <h2 class="text-2xl text-bold p-4 m-4 text-gray-900 flex justify-center">Want To Host an Election</h2>
+            <br>
+            <div class="flex justify-center items-center">
+                <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 flex items-center" onclick="location.href='/admin'">Visit Admin Site</button>
+            </div>
+            <br>
+            <h2 class="text-2xl text-bold p-4 m-4 text-gray-900 flex justify-center">Here to Vote in an Election with a Voter ID!!!</h2>
+            <br>
+            <div class="flex justify-center items-center">
+                <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 flex items-center" onclick="location.href='/voter'">Vote Here</button>
+            </div>
+            <br>
+        </div> 
+    </div>
+</body>
+</html>

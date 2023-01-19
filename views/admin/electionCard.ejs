@@ -1,0 +1,50 @@
+<div class="flex items-center">
+  <h5 class="text-xl font-semibold text-gray-600"><%= title %></h5>
+  <span id="count-<%= id  %>" class="bg-gray-300 ml-2 px-2 rounded text-sm">
+    <%= elections.length %>
+  </span>
+</div>
+
+
+<div class="overflow-x-auto relative">
+  <table class="w-full text-sm text-left text-gray-500">
+      <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+              <th scope="col" class="py-3 px-6">
+                  Election Name
+              </th>
+              <th scope="col" class="py-3 px-6">
+                  Custom String
+              </th>
+              <th scope="col" class="py-3 px-6">
+                  Action
+              </th>
+              <th scope="col" class="py-3 px-6">
+                Ended
+            </th>
+          </tr>
+      </thead>
+      <tbody>
+        <% elections.forEach(election => { %>
+          <tr class="bg-white border-b">
+            <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
+              <a href="/admin/election/<%= election.id %>"><%= election.electionName %></a>
+            </th>
+            <td class="py-4 px-6">
+                <%= election.customString %>
+            </td>
+            <td class="py-4 px-6">
+                <a href="#" class="font-medium text-blue-600 hover:underline" onclick="deleteElection(<%= election.id %>)">Delete</a>
+            </td>
+            <td class="py-4 px-6">
+              <% if (!election.ended) { %>
+                ❌
+              <% } else { %>
+                ✅
+              <% } %>
+            </td>
+        </tr>
+        <% }) %>
+      </tbody>
+  </table>
+</div>

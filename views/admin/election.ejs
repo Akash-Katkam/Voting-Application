@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hideMe {
+            -moz-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Firefox */
+            -webkit-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Safari and Chrome */
+            -o-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Opera */
+            animation: cssAnimation 0s ease-in 5s forwards;
+            -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+        }
+        @keyframes cssAnimation {
+            to {
+                width:0;
+                height:0;
+                overflow:hidden;
+                display: none;
+            }
+        }
+        @-webkit-keyframes cssAnimation {
+            to {
+                width:0;
+                height:0;
+                visibility:hidden;
+                display: none;
+            }
+        }
+  </style>
+</head>
+<body>
+    <div class="grid grid-cols-6">
+        <div class="col-start-1 col-span-1 flex justify-end cursor-pointer">
+            <?xml version="1.0" encoding="iso-8859-1"?>
+            <svg fill="#000000" height="800px" width="800px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+                viewBox="0 0 219.151 219.151" xml:space="preserve" class="w-8 h-8 m-4 cursor-pointer" onclick="location.href='/admin/elections'">
+            <g>
+                <path d="M109.576,219.151c60.419,0,109.573-49.156,109.573-109.576C219.149,49.156,169.995,0,109.576,0S0.002,49.156,0.002,109.575
+                    C0.002,169.995,49.157,219.151,109.576,219.151z M109.576,15c52.148,0,94.573,42.426,94.574,94.575
+                    c0,52.149-42.425,94.575-94.574,94.576c-52.148-0.001-94.573-42.427-94.573-94.577C15.003,57.427,57.428,15,109.576,15z"/>
+                <path d="M94.861,156.507c2.929,2.928,7.678,2.927,10.606,0c2.93-2.93,2.93-7.678-0.001-10.608l-28.82-28.819l83.457-0.008
+                    c4.142-0.001,7.499-3.358,7.499-7.502c-0.001-4.142-3.358-7.498-7.5-7.498l-83.46,0.008l28.827-28.825
+                    c2.929-2.929,2.929-7.679,0-10.607c-1.465-1.464-3.384-2.197-5.304-2.197c-1.919,0-3.838,0.733-5.303,2.196l-41.629,41.628
+                    c-1.407,1.406-2.197,3.313-2.197,5.303c0.001,1.99,0.791,3.896,2.198,5.305L94.861,156.507z"/>
+            </g>
+            </svg>
+        </div>
+        <div class="col-start-2 col-span-4">
+            <%- include('header') %>
+            <br><br><br>
+            <h1 class="text-4xl"><%= election.electionName %></h1>
+            <br><br>
+            <h4 class="">There are 
+                <span id="voterCount" class="bg-gray-300 ml-2 px-2 rounded text-sm">
+                <%= voterCount %>
+                </span>
+                &nbsp registered voters in this Election</h4>
+            <br>
+            <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 flex items-center" id="votersButton" onclick="location.href='/admin/election/voters/<%= election.id %>'">Manage Voters</button>
+            <!-- <a href="/admin/election/voters/<%= election.id %>" class="text-xl font-semibold underline" id="votersButton">Manage Voters</a> -->
+            <br><br>
+            <h4 class="">There are 
+                <span id="questionCount" class="bg-gray-300 ml-2 px-2 rounded text-sm">
+                <%= questionCount %>
+                </span>
+                &nbsp Question in this Election</h4>
+            <br>
+            <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 flex items-center" id="questionButton" onclick="location.href='/admin/election/questions/<%= election.id %>'">Manage Questions</button>
+            <!-- <a href="/admin/election/questions/<%= election.id %>" class="text-xl font-semibold underline" id="questionButton">Manage Questions</a> -->
+            <br><br>
+            
+            <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2 flex items-center" id="resultButton" onclick="location.href='/admin/election/result/<%= election.id %>'">Preview Results</button>
+            <!-- <a href="/admin/election/result/<%= election.id %>" class="text-xl font-semibold underline" id="questionButton">View Results</a> -->
+            <br>
+            <div id="publicURL" class="p-3 m-3 border rounded bg-blue-200 hidden"></div>
+            <br>
+            <button class="bg-green-500 text-white px-2 py-1 rounded disabled:bg-red-100" onclick="launchElection()" <% if (election.isLive || election.ended) { %>
+                disabled
+            <% } %> >Launch Election</button>
+            <button class="bg-green-500 text-white px-2 py-1 rounded disabled:bg-red-100" onclick="endElection()" <% if (!election.isLive || election.ended) { %>
+                disabled
+            <% } %>
+                >End Election</button><br>
+            <br>
+            <div class="hidden" id="ElectionLaunch">
+                <ul class="bg-green-100 rounded border border-green-200 border-2" id="ElectionLaunchul">
+                    <li class="text-center hideMe" id="ElectionLaunchli"></li>
+                </ul>
+            </div> 
+            <div>
+                <div class="hideMe">
+                    <% if(messages && messages.error && messages.error.length > 0)  { %>
+                        <ul class="bg-red-100 rounded border border-red-200 border-2 hideMe">
+                            <% for(var i=0; i<messages.error.length; i++) { %>
+                                    <li class="text-center hideMe"> <%= messages.error[i] %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+                    <% if(messages && messages.success && messages.success.length > 0)  { %>
+                        <ul class="bg-green-100 rounded border border-green-200 border-2 hideMe">
+                            <% for(var i=0; i<messages.success.length; i++) { %>
+                                    <li class="text-center hideMe"> <%= messages.success[i] %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+                    <% if(messages && messages.info && messages.info.length > 0)  { %>
+                        <ul class="bg-blue-100 rounded border border-blue-200 border-2 hideMe">
+                            <% for(var i=0; i<messages.info.length; i++) { %>
+                                    <li class="text-center hideMe"> <%= messages.info[i] %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        document.addEventListener("DOMContentLoaded", function(event) {
+            if (<%= election.isLive %>){
+                document.getElementById("questionButton").classList.add("hidden")
+            }
+            if (<%= election.ended %>){
+                document.getElementById("questionButton").innerText = "View Questions"
+                document.getElementById("votersButton").innerText = "View Voters"
+                document.getElementById('resultButton').innerText = "View Results"
+            }
+            if (<%= election.isLive %> || <%= election.ended %>) {
+                document.getElementById("publicURL").classList.remove('hidden')
+                const customString = "<%= election.customString %>" 
+                // trying to Implement a copy icon to copy the link
+                // const svgWithLink = '<?xml version="1.0" encoding="utf-8"?><svg version="1.1"  id="Layer_1"xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 115.77 122.88" style="enable-background:new 0 0 115.77 122.88" xml:space="preserve"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style><g><path class="st0" d="M89.62,13.96v7.73h12.19h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02v0.02 v73.27v0.01h-0.02c-0.01,3.84-1.57,7.33-4.1,9.86c-2.51,2.5-5.98,4.06-9.82,4.07v0.02h-0.02h-61.7H40.1v-0.02 c-3.84-0.01-7.34-1.57-9.86-4.1c-2.5-2.51-4.06-5.98-4.07-9.82h-0.02v-0.02V92.51H13.96h-0.01v-0.02c-3.84-0.01-7.34-1.57-9.86-4.1 c-2.5-2.51-4.06-5.98-4.07-9.82H0v-0.02V13.96v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07V0h0.02h61.7 h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02V13.96L89.62,13.96z M79.04,21.69v-7.73v-0.02h0.02 c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v64.59v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h12.19V35.65 v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07v-0.02h0.02H79.04L79.04,21.69z M105.18,108.92V35.65v-0.02 h0.02c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v73.27v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h61.7h0.02 v0.02c0.91,0,1.75-0.39,2.37-1.01c0.61-0.61,1-1.46,1-2.37h-0.02V108.92L105.18,108.92z"/></g></svg>'
+                if (customString){
+                    const link = `${location.protocol}//${location.host}/election/<%= election.customString %>`
+                    document.getElementById("publicURL").innerHTML = `<span>Public URL: </span><a href="${link}" class='text-xl font-semibold underline'>${link}</a>`;
+                }
+                else {
+                    console.log("No custom string", <%= election.id %>)
+                    const link = `${location.protocol}//${location.host}/election/<%= election.id %>`
+                    document.getElementById("publicURL").innerHTML = `<span>Public URL: </span><a href="${link}" class='text-xl font-semibold underline'>${link}</a`;
+                }
+            }
+        });
+        function launchElection() {
+            // document.getElementById("questionButton").classList.add("hidden")
+            console.log("Launching Election")
+            var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            fetch('/admin/election/launch/<%= election.id %>', {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify({
+                    _csrf: token
+                })
+            })
+            .then(async (res) => {
+                console.log(res.status)
+                let body = await res.json()
+                console.log(body)
+                if (res.ok && !body.success){
+                    console.log(body.message)
+                    showSucess(body.message)
+                    await new Promise(r => setTimeout(r, 1500));
+                    window.location.reload()
+                }
+                else if (res.ok){
+                    showSucess("Launching Election, Please Wait...")
+                    await new Promise(r => setTimeout(r, 1500));
+                    window.location.reload()
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+        function endElection() {
+            // document.getElementById("questionButton").classList.remove("hidden")
+            console.log("Stoping Election")
+            var token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            fetch('/admin/election/stop/<%= election.id %>', {
+                method: 'PUT',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    _csrf: token
+                })
+            })
+            .then(async (res) => {
+                let body = await res.json()
+                if (res.ok && body.success){
+                    showSucess("Stopping Election, Please Wait...")
+                    await new Promise(r => setTimeout(r, 1500));
+                    window.location.reload()
+                }
+                else if (res.ok && !body.success){
+                    showSucess(body.message)
+                    await new Promise(r => setTimeout(r, 1000));
+                    window.location.reload();
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+        function showSucess(success) {
+            document.getElementById('ElectionLaunchli').innerText = success;
+            document.getElementById('ElectionLaunch').classList.remove('hidden')
+            setTimeout(() => {
+                document.getElementById('ElectionLaunch').classList.add('hidden')
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <title><%= title %></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hideMe {
+            -moz-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Firefox */
+            -webkit-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Safari and Chrome */
+            -o-animation: cssAnimation 0s ease-in 5s forwards;
+            /* Opera */
+            animation: cssAnimation 0s ease-in 5s forwards;
+            -webkit-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+        }
+        @keyframes cssAnimation {
+            to {
+                width:0;
+                height:0;
+                overflow:hidden;
+                display: none;
+            }
+        }
+        @-webkit-keyframes cssAnimation {
+            to {
+                width:0;
+                height:0;
+                visibility:hidden;
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header.ejs') %>
+            <br>
+            <a href="/voter/logout">Signout</a>
+            <br>
+            <h2 class="text-2xl font-bold">Election Questions</h2>
+            <br><br>
+            <p>Please Answer Every Question!!!</p>
+            <form id="pollForm" method="post" action="/voter/election" class="space-y-3">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <input type="hidden" name="EID" value="<%= EID %>">
+                <% for (var i = 0; i < questions.length; i++) { %>
+                    <div class="border rounded-lg border-4">
+                        <div class="bg-gray-200 border">
+                            <h3 class="text-xl font-bold text-black-900 break-words"><%= i+1 %>.&nbsp;<%= questions[i].title %></h3>
+                            <h4 class="pl-4 break-words"><%= questions[i].desc %></h4>
+                            <input type="hidden" name="questions" value="<%= questions[i].id %>">
+                        </div>
+                        <div class="m-4">
+                            <div class="space-y-3 ml-3">
+                                <% for (var j = 0; j < questions[i].options.length; j++) { %>
+                                    <div class="bg-gray-300 cursor-pointer rounded p-4">
+                                        <input type="radio" name="option<%= i %>" value="<%= questions[i].options[j].id %>" id="<%= questions[i].options[j].id %>" class="w-4 h-4 cursor-pointer">
+                                        <label class="cursor-pointer w-full break-words" for="<%= questions[i].options[j].id %>" name="option<%= i %>"><%= questions[i].options[j].desc %></label><br>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+                <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Submit</button>
+            </form>
+            <br><br>
+            <div class="hideMe">
+                <% if(messages && messages.error && messages.error.length > 0)  { %>
+                    <ul class="bg-red-100 rounded border border-red-200 border-2 hideMe">
+                        <% for(var i=0; i<messages.error.length; i++) { %>
+                                <li class="text-center hideMe"> <%= messages.error[i] %></li>
+                        <% } %>
+                    </ul>
+                <% } %>
+                <% if(messages && messages.success && messages.success.length > 0)  { %>
+                    <ul class="bg-green-100 rounded border border-green-200 border-2 hideMe">
+                        <% for(var i=0; i<messages.success.length; i++) { %>
+                                <li class="text-center hideMe"> <%= messages.success[i] %></li>
+                        <% } %>
+                    </ul>
+                <% } %>
+                <% if(messages && messages.info && messages.info.length > 0)  { %>
+                    <ul class="bg-blue-100 rounded border border-blue-200 border-2 hideMe">
+                        <% for(var i=0; i<messages.info.length; i++) { %>
+                                <li class="text-center hideMe"> <%= messages.info[i] %></li>
+                        <% } %>
+                    </ul>
+                <% } %>
+            </div> 
+        </div>
+    </div>   
+    <script>
+        // Check if every answer is answered and one option is selected for each question
+        document.getElementById("pollForm").addEventListener("submit", function(event) {
+            var questions = document.querySelectorAll("h3");
+            var answers = document.querySelectorAll("input[type=radio]:checked");
+            if (questions.length != answers.length) {
+                event.preventDefault();
+                // console.log("Error Occured All Questions not Answered")
+                alert("Please answer all questions");
+            }
+        });
+        
+    </script>
+</body>
+
+
+
+
+</html>
