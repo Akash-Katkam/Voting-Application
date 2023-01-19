@@ -19,7 +19,23 @@ const {
 
 const saltRounds = 10;
 
-
+const app = express()
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.set("view engine", "ejs");
+app.use(cookieParser("secret some"));
+app.use(flash());
+app.use(
+  session({
+    secret: "secret it is",
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(csrf("UicgFjBbMtvsLJEJUSfK3Dz0BR6A0pIm", ["DELETE", "PUT", "POST"]));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -974,7 +990,7 @@ app.get(
   }
 );
 
-const app = express();
+
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
@@ -1052,7 +1068,5 @@ app.get(
   }
 );
 
-app.use("/admin", require("./routes/electionAdmin"));
-app.use("/voter", require("./routes/voter"));
 
 module.exports = app;
